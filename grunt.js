@@ -1,7 +1,7 @@
 module.exports = function(grunt) {
 
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-jasmine-runner');
+  //grunt.loadNpmTasks('grunt-contrib-uglify');
+  //grunt.loadNpmTasks('grunt-jasmine-runner');
 
   // Project configuration.
   grunt.initConfig({
@@ -18,17 +18,6 @@ module.exports = function(grunt) {
         ],
         dest : 'vendor/assets/javascripts/s3_multipart/lib.js'
       }
-    },
-
-    jasmine : {
-      src : [
-        'javascripts/libs/underscore.js',
-        'javascripts/s3mp.js',
-        'javascripts/upload.js',
-        'javascripts/uploadpart.js'
-      ],
-      helpers : 'spec/javascripts/helpers/*.js',
-      specs : 'spec/javascripts/*.js'
     },
 
     min: {

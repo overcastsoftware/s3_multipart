@@ -26,17 +26,17 @@ module S3Multipart
       def validate_file_size
         size = self.size
         limits = deserialize(self.uploader).size_limits
-        raise FileSizeError, "File size is too small" if limits[:min] > size
-        raise FileSizeError, "File size is too large" if limits[:max] < size 
+        #raise FileSizeError, "File size is too small" if limits[:min] > size
+        #raise FileSizeError, "File size is too large" if limits[:max] < size 
       end
 
       def validate_file_type
         ext = self.name.match(/\.([a-zA-Z0-9]+)$/)[1]
         controller = deserialize(self.uploader)
 
-        if !controller.extensions.include?(ext)
-          raise FileTypeError, "File type not supported"
-        end
+        #if !controller.extensions.include?(ext)
+        #  raise FileTypeError, "File type not supported"
+        #end
       end
 
       def deserialize(uploader)
