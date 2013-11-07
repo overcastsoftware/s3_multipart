@@ -61,7 +61,6 @@ function S3MP(options) {
       var parts, i, ETag;
 
       parts = uploadObj.parts;
-      console.log(parts)
 
       // Append the ETag (in the response header) to the ETags array
       ETag = finished_part.xhr.getResponseHeader("ETag");
