@@ -10,7 +10,7 @@ module S3Multipart
         html << button_tag(:class => options[:button_class]) do
           content_tag(:span, options[:button_text])
         end
-        html << '<ul class="upload-container"></ul>'
+        html << '<ul class="upload-container"></ul>'.html_safe
       end
     end
   end
