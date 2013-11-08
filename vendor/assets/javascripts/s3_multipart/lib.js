@@ -124,7 +124,6 @@ function S3MP(options) {
           }
 
           upload = S3MP.uploadList[key];
-          console.log(upload);
           size = upload.size;
           done = upload.uploaded;
 
