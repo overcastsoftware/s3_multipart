@@ -155,11 +155,9 @@ function S3MP(options) {
   }
 
   _.each(files, function(file, key) {
-    //if (file.size < 5000000) {
-      //return S3MP.onError({name: "FileSizeError", message: "File size is too small"})
-      // This should still work. The multipart API just can't be used b/c Amazon doesn't allow 
-      // multipart file uploads that are less than 5 mb in size.
-    //}
+    if (file.name.toUpperString().a.match(/^(?:NM|AU)\d+/) === null) {
+      return S3MP.onError({name: "NoWorkNrError", message: "This file does not start with a work number. Rename the file so it starts with a work number, either NMxxxxx or AUxxxxx."})
+    }
 
     var upload = new Upload(file, S3MP, key);
     S3MP.uploadList.push(upload);
