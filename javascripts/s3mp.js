@@ -143,12 +143,11 @@ function S3MP(options) {
   _.each(files, function(file, key) {
     if (file.name.toUpperCase().match(/^(?:NM|AU)\d+/) === null) {
       S3MP.onError({name: "NoWorkNrError", filename: file.name, message: "This file does not start with a work number. Rename the file so it starts with a work number, either NMxxxxx or AUxxxxx."})
-      return false;
+    } else {
+      var upload = new Upload(file, S3MP, key);
+      S3MP.uploadList.push(upload);
+      upload.init();
     }
-
-    var upload = new Upload(file, S3MP, key);
-    S3MP.uploadList.push(upload);
-    upload.init();
   });
 
 };
