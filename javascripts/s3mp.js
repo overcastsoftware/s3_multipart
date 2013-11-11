@@ -141,8 +141,8 @@ function S3MP(options) {
   }
 
   _.each(files, function(file, key) {
-    if (file.name.toUpperString().a.match(/^(?:NM|AU)\d+/) === null) {
-      return S3MP.onError({name: "NoWorkNrError", message: "This file does not start with a work number. Rename the file so it starts with a work number, either NMxxxxx or AUxxxxx."})
+    if (file.name.toString().toUpperString().a.match(/^(?:NM|AU)\d+/) === null) {
+      return S3MP.onError({name: "NoWorkNrError", message: "This file, "+file.name.toString()+" does not start with a work number. Rename the file so it starts with a work number, either NMxxxxx or AUxxxxx."})
     }
 
     var upload = new Upload(file, S3MP, key);
