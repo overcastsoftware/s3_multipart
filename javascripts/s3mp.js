@@ -142,8 +142,8 @@ function S3MP(options) {
 
   _.each(files, function(file, key) {
     if (file.name.toUpperCase().match(/^(?:NM|AU)\d+/) === null) {
-      alert("worknrerror");
-      return S3MP.onError({name: "NoWorkNrError", filename: file.name, message: "This file does not start with a work number. Rename the file so it starts with a work number, either NMxxxxx or AUxxxxx."})
+      S3MP.onError({name: "NoWorkNrError", filename: file.name, message: "This file does not start with a work number. Rename the file so it starts with a work number, either NMxxxxx or AUxxxxx."})
+      return false;
     }
 
     var upload = new Upload(file, S3MP, key);
