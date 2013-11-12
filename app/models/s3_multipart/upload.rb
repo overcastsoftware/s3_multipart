@@ -12,13 +12,10 @@ module S3Multipart
 
     def execute_callback(stage, session)
       controller = deserialize(uploader)
-      puts "-------------- Executing Callbacks ------------------"
       case stage
       when :begin
-        puts "----------- Callback on Create ----------------"
         controller.on_begin_callback.call(self, session) if controller.on_begin_callback
       when :complete
-        puts "----------- Callback on Complete ----------------"
         controller.on_complete_callback.call(self, session) if controller.on_begin_callback
       end
     end
