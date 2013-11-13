@@ -6,7 +6,7 @@ module S3Multipart
 
     def initiate(options)
       real_name = options[:object_name]
-      unique_name = real_name.parameterize+"#"+UUID.generate+"."+real_name.split(".").last # clean this up late
+      unique_name = real_name.parameterize+"__"+UUID.generate+"."+real_name.split(".").last # clean this up late
 
       url = "/#{unique_name}?uploads"
 
