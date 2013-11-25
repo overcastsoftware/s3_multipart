@@ -15,7 +15,7 @@ module S3Multipart
 
       response = Http.post url, {headers: headers}
       puts "==========="
-      puts response
+      puts response.inspect
       puts "==========="
       parsed_response_body = XmlSimple.xml_in(response.body)  
 
