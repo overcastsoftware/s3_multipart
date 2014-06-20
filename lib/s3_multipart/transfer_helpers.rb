@@ -1,6 +1,6 @@
 module S3Multipart
 
-  # Collection of methods to be mixed in to the Upload class.  
+  # Collection of methods to be mixed in to the Upload class.
   # Handle all communication with Amazon S3 servers
   module TransferHelpers
 
@@ -15,7 +15,7 @@ module S3Multipart
                                                              headers: options[:headers]
 
       response = Http.post url, headers: headers
-      parsed_response_body = XmlSimple.xml_in(response.body)  
+      parsed_response_body = XmlSimple.xml_in(response.body)
 
       { "key"  => parsed_response_body["Key"][0],
         "upload_id"   => parsed_response_body["UploadId"][0],
@@ -47,7 +47,7 @@ module S3Multipart
       headers[:authorization], headers[:date] = sign_request verb: 'POST', url: url, content_type: options[:content_type]
 
       response = Http.post url, {headers: headers, body: body}
-      parsed_response_body = XmlSimple.xml_in(response.body)  
+      parsed_response_body = XmlSimple.xml_in(response.body)
 
       begin
         return { location: parsed_response_body["Location"][0] }
@@ -62,7 +62,9 @@ module S3Multipart
     end
 
     def unique_name(options)
-      url = [UUID.generate, options[:object_name]].join("/")
+      # url = [UUID.generate, options[:object_name]].join("/")
+      # url = [options[:object_name]].join("/")
+      url = options[:object_name].parameterize+"__"+UUID.generate+"."+options[:object_name].split(".").last # clean this up late
       controller = S3Multipart::Uploader.deserialize(options[:uploader])
 
       if controller.mount_point && defined?(CarrierWaveDirect)
@@ -111,7 +113,7 @@ module S3Multipart
 
       def format_part_list_in_xml(options)
         hash = Hash["Part", ""];
-        hash["Part"] = options[:parts].map do |part| 
+        hash["Part"] = options[:parts].map do |part|
           { "PartNumber" => part[:partNum], "ETag" => part[:ETag] }
         end
         hash["Part"].sort_by! {|obj| obj["PartNumber"]}

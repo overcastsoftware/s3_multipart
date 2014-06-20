@@ -3,7 +3,7 @@ module S3Multipart
     extend S3Multipart::TransferHelpers
     include ActionView::Helpers::NumberHelper
 
-    attr_accessible :key, :upload_id, :name, :uploader, :size, :context
+    attr_accessible :key, :upload_id, :name, :uploader, :size, :context, :location
 
     before_create :validate_file_type, :validate_file_size
 
@@ -44,7 +44,7 @@ module S3Multipart
         ext = self.name.match(/\.([a-zA-Z0-9]+)$/)[1]
         types = deserialize(self.uploader).file_types
 
-        unless types.blank? || types.include?(ext)
+        unless types.blank? || types[:extensions].include?(ext)
           raise FileTypeError, I18n.t("s3_multipart.errors.types", types: types.join(", "))
         end
       end
