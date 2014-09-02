@@ -10,6 +10,7 @@ module S3Multipart
         response = {error: e.message}
       rescue => e
         logger.error "EXC: #{e.message}"
+          airbrake(e, params)
         response = { error: t("s3_multipart.errors.create") }
       ensure
         render :json => response
@@ -29,6 +30,7 @@ module S3Multipart
           response = Upload.sign_batch(params)
         rescue => e
           logger.error "EXC: #{e.message}"
+          airbrake(e, params)
           response = {error: t("s3_multipart.errors.update")}
         ensure
           render :json => response
@@ -40,6 +42,7 @@ module S3Multipart
           response = Upload.sign_part(params)
         rescue => e
           logger.error "EXC: #{e.message}"
+          airbrake(e, params)
           response = {error: t("s3_multipart.errors.update")}
         ensure
           render :json => response
@@ -54,10 +57,19 @@ module S3Multipart
           upload.execute_callback(:complete, session)
         rescue => e
           logger.error "EXC: #{e.message}"
+          airbrake(e, params)
           response = {error: t("s3_multipart.errors.complete")}
         ensure
           render :json => response
         end
+      end
+
+      def airbrake(e, params)
+        Airbrake.notify_or_ignore(
+          e,
+          :parameters    => params,
+          :session      => session
+        )
       end
 
   end
