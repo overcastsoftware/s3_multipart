@@ -3,7 +3,7 @@ module S3Multipart
     extend S3Multipart::TransferHelpers
     include ActionView::Helpers::NumberHelper
 
-    attr_accessible :key, :upload_id, :name, :uploader, :size, :context, :location
+    # attr_accessible :key, :upload_id, :name, :uploader, :size, :context, :location
 
     before_create :validate_file_type, :validate_file_size
 
