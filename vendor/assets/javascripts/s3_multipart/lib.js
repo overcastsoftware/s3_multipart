@@ -120,6 +120,7 @@ function S3MP(options) {
       var fn = function(key) {
         progress_timer[key] = global.setInterval(function() {
           var upload, size, done, percent, speed;
+          done = 0;
 
           if (typeof last_upload_chunk[key] === "undefined") {
             last_upload_chunk[key] = 0;
@@ -406,8 +407,8 @@ function Upload(file, o, key) {
 
         upload.signPartRequests(id, object_name, upload_id, parts, function(response) {
           _.each(parts, function(part, key) {
-            part.date = response[key].date;
-            part.auth = response[key].authorization;
+            part.date = response.uploads[key].date;
+            part.auth = response.uploads[key].authorization;
 
             // Notify handler that an xhr request has been opened
             upload.handler.beginUpload(pipes, upload);
