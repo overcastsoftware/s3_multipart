@@ -54,7 +54,8 @@ function S3MP(options) {
 
     // called when an upload is paused or the network connection cuts out
     onError: function(uploadObj, part) {
-      // To-do
+      part.status = 'cancel';
+      S3MP.onError(uploadObj, part);
     },
 
     // called when a single part has successfully uploaded
@@ -191,14 +192,19 @@ S3MP.prototype.signPartRequests = function(id, object_name, upload_id, parts, cb
     return memo + "-" + part.size;
   }, parts[0].size);
 
+  part_numbers = _.reduce(_.rest(parts), function(memo, part) {
+    return memo + "-" + part.num;
+  }, parts[0].num);
+
   url = "/s3_multipart/uploads/"+id;
   body = JSON.stringify({ object_name     : object_name,
                           upload_id       : upload_id,
-                          content_lengths : content_lengths
+                          content_lengths : content_lengths,
+                          part_numbers    : part_numbers
                         });
 
   xhr = this.createXhrRequest('PUT', url);
-  this.deliverRequest(xhr, body, cb);
+  this.deliverRequest(xhr, body, cb, parts);
 };
 
 S3MP.prototype.completeMultipart = function(uploadObj, cb) {
@@ -217,7 +223,7 @@ S3MP.prototype.completeMultipart = function(uploadObj, cb) {
 
 // Specify callbacks, request body, and settings for requests that contact
 // the site server, and send the request.
-S3MP.prototype.deliverRequest = function(xhr, body, cb) {
+S3MP.prototype.deliverRequest = function(xhr, body, cb, parts) {
   var self = this;
   
   xhr.onload = function() {
@@ -228,7 +234,7 @@ S3MP.prototype.deliverRequest = function(xhr, body, cb) {
         message: response.error
       });  
     }
-    cb(response);
+    cb(response, parts);
   };
 
   xhr.onerror = function() {
@@ -449,12 +455,25 @@ function UploadPart(blob, key, upload) {
 };
 
 UploadPart.prototype.activate = function() { 
-  this.xhr.open('PUT', 'http://'+this.upload.bucket+'.s3.amazonaws.com/'+this.upload.object_name+'?partNumber='+this.num+'&uploadId='+this.upload.upload_id, true);
-  this.xhr.setRequestHeader('x-amz-date', this.date);
-  this.xhr.setRequestHeader('Authorization', this.auth);
+  current_time = new Date();
+  part_date = new Date(this.date);
 
-  this.xhr.send(this.blob);
-  this.status = "active";
+  if( (current_time - part_date)/1000/60 > 15 ){ //x-amz-date is greater then 15 Min so get a new date and auth token
+    // console.log("Getting new signed path from server as x-amz-date expired for part number " + this.num);
+    this.upload.signPartRequests(this.upload.id, this.upload.object_name, this.upload.upload_id, [this], function(response, parts) {
+      // console.log("Got new signed path from server , going to start the chunk upload for part number " );
+      part = parts[0];
+      part.date = response.uploads[0].date;
+      part.auth = response.uploads[0].authorization;
+      part.activate()
+    });
+  } else {
+    this.xhr.open('PUT', 'http://'+this.upload.bucket+'.s3.amazonaws.com/'+this.upload.object_name+'?partNumber='+this.num+'&uploadId='+this.upload.upload_id, true);
+    this.xhr.setRequestHeader('x-amz-date', this.date);
+    this.xhr.setRequestHeader('Authorization', this.auth);
+    this.xhr.send(this.blob);
+    this.status = "active";
+  }
 };
 
 UploadPart.prototype.pause = function() {
