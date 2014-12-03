@@ -71,7 +71,7 @@ function S3MP(options) {
 
       // Increase the uploaded count and delete the finished part 
       uploadObj.uploaded += finished_part.size;
-      uploadObj.inprogress[finished_part.num] = 0;
+
       i = _.indexOf(parts, finished_part);
       parts.splice(i,1);
 
@@ -130,10 +130,15 @@ function S3MP(options) {
           upload = S3MP.uploadList[key];
           size = upload.size;
           done = upload.uploaded;
+          inprogress = upload.inprogress;
+          parts = upload.parts;
 
-          _.each(upload.inprogress,function(val) {
+          upload.inprogress.forEach(function(val, index) {
             if(val !== undefined) {
-              done += val;
+              part = parts.filter(function(e) { return e.num === index; } );
+              if(part.length == 1 && inprogress[index] < part[0].size) {
+                done += val;
+              }
             }
           });
 
@@ -352,9 +357,8 @@ S3MP.prototype.resume = function(key) {
 function Upload(file, o, key) {
   function Upload() {
     var upload, id, parts, part, segs, chunk_segs, chunk_lens, pipes, blob;
-    
     upload = this;
-    
+
     this.key = key;
     this.file = file;
     this.name = file.name;
