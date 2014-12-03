@@ -374,14 +374,14 @@ function Upload(file, o, key) {
       num_segs = 50;
       pipes = 5;
     } else if (this.size > 100000000) { // greater than 100 mb
-      num_segs = 20;
+      num_segs = 16;
       pipes = 5;
     } else if (this.size > 50000000) { // greater than 50 mb
       num_segs = 5;
       pipes = 2;
     } else if (this.size > 10000000) { // greater than 10 mb
-      num_segs = 2;
-      pipes = 2;
+      num_segs = 1;
+      pipes = 1;
     } else { // greater than 5 mb (S3 does not allow multipart uploads < 5 mb)
       num_segs = 1;
       pipes = 1;
